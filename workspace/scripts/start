@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+echo "Setting up Bundler"
+bundle config build.nokogiri --use-system-libraries
+
+echo "Installing gems"
+bundle check || bundle install
+
+echo "Running Migrations"
+bundle exec rake db:migrate
+
+echo "Starting server"
+bundle exec rails s -p 3000 -b '0.0.0.0'

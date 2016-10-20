@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+  workspace:
+    build: ./workspace
+    environment:
+      DATABASE_DEV_NAME: awesome_database_name_development
+      DATABASE_TEST_NAME: awesome_database_name_test
+      DATABASE_USERNAME: awesome_database_username
+      DATABASE_PASSWORD: awesome_database_password
+      DATABASE_HOST: postgres
+    volumes_from:
+      - volumes_source
+    ports:
+      - '3000:3000'
+    tty: true
+    command: dev
+    links:
+      - postgres
+
+  volumes_source:
+    image: tianon/true
+    volumes:
+      - ../awesome_app:/app
+      - /bundler
+      - ./workspace:/docker
+
+  postgres:
+    build: ./postgres
+    volumes_from:
+      - volumes_data
+    environment:
+      POSTGRES_DB: awesome_database_username
+      POSTGRES_TEST_DB: awesome_database_password
+      POSTGRES_USER: awesome_database_username
+      POSTGRES_PASSWORD: awesome_database_username
+
+  pgadmin:
+    image: fenglc/pgadmin4
+    ports:
+      - '5050:5050'
+    links:
+      - postgres
+
+  volumes_data:
+    image: tianon/true
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
